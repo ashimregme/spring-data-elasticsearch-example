@@ -2,7 +2,7 @@
 This repository contains a demo project showcasing CRUD operations using spring-data-elasticsearch.
 This project was initially created using [spring initializr](https://start.spring.io/). 
 
-##Requirements
+## Requirements
 * Java
 * Gradle
 * Docker (optional)
