@@ -1,0 +1,41 @@
+services:
+  main:
+    image: springio/gs-spring-boot-docker
+    environment:
+      es.scheme: http
+      es.host: es
+      es.port: 9200
+      logging.level.root: debug
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+    depends_on:
+      - es
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+  es:
+    image: elasticsearch:8.18.1
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false" # do not close connection when http request is sent
+    networks:
+      - backend
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+networks:
+  backend:
