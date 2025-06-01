@@ -38,7 +38,11 @@ minikube kubectl -- apply -f k8s/
 ```
 minikube kubectl -- logs -f -l app=main
 ```
-6. Command to clean:
+6. Check the url of the main service:
+```
+minikube service main --url
+```
+7. Command to clean:
 ```
 minikube kubectl -- delete -f k8s/
 ```
