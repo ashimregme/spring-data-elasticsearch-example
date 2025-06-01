@@ -16,26 +16,49 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 1G
+          cpus: '4'
+          memory: 2G
         reservations:
-          cpus: '0.50'
+          cpus: '1'
           memory: 512M
   es:
     image: elasticsearch:8.18.1
     environment:
+      - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx2048m"
       - "discovery.type=single-node"
       - "xpack.security.enabled=false" # do not close connection when http request is sent
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
     networks:
       - backend
     restart: on-failure
     deploy:
       resources:
         limits:
+          cpus: '4'
+          memory: 2G
+        reservations:
           cpus: '1'
           memory: 1G
+  kibana:
+    image: kibana:8.18.1
+    ports:
+      - 5601:5601
+    networks:
+      - backend
+    depends_on:
+      - es
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
         reservations:
-          cpus: '0.50'
+          cpus: '1'
           memory: 512M
 networks:
   backend:
+volumes:
+  esdata:
