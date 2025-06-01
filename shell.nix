@@ -1,8 +1,9 @@
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell {
-  buildInputs = [
-    pkgs.jdk21_headless
-    pkgs.gradle_8
+  buildInputs = with pkgs; [
+    jdk21_headless
+    gradle_8
+    minikube
   ];
 }
