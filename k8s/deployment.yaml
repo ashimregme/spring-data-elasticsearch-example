@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: main
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      containers:
+        - name: main
+          image: np.com.ashimregmi/spring-data-elasticsearch-example
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: ES_SCHEME
+              value: "http"
+            - name: ES_HOST
+              value: "es"
+            - name: ES_PORT
+              value: "9200"
+            - name: LOGGING_LEVEL_ROOT
+              value: "debug"
+          resources:
+            requests:
+              cpu: "1"
+              memory: "512Mi"
+            limits:
+              cpu: "4"
+              memory: "2Gi"
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: es
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: es
+  template:
+    metadata:
+      labels:
+        app: es
+    spec:
+      containers:
+        - name: es
+          image: elasticsearch:8.18.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: bootstrap.memory_lock
+              value: "true"
+            - name: ES_JAVA_OPTS
+              value: "-Xms1024m -Xmx2048m"
+            - name: discovery.type
+              value: "single-node"
+            - name: xpack.security.enabled
+              value: "false"
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: esdata
+          resources:
+            requests:
+              cpu: "1"
+              memory: "1Gi"
+            limits:
+              cpu: "4"
+              memory: "2Gi"
+      volumes:
+        - name: esdata
+          persistentVolumeClaim:
+            claimName: esdata-pvc
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: kibana:8.18.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5601
+          resources:
+            requests:
+              cpu: "1"
+              memory: "512Mi"
+            limits:
+              cpu: "4"
+              memory: "2Gi"
